@@ -33,7 +33,6 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalConfiguration
 import androidx.compose.ui.unit.dp
 
-@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun HomeScreen(
     modifier: Modifier = Modifier,
@@ -54,6 +53,37 @@ fun HomeScreen(
         }
     }
 
+    MyModalBottomSheet(
+        menuOpened = menuOpened,
+        setMenuOpened = {
+            menuOpened = it
+        }
+    ) {
+        Column(
+            modifier = Modifier
+                .padding(16.dp)
+                .heightIn(max = (0.8f * LocalConfiguration.current.screenHeightDp).dp) // Apply constraint here instead
+                .verticalScroll(rememberScrollState()),
+            verticalArrangement = Arrangement.spacedBy(8.dp),
+        ) {
+            (1..20).forEach {
+                MenuItem(
+                    label = "Option $it",
+                    selected = false,
+                    onClick = {}
+                )
+            }
+        }
+    }
+}
+
+@OptIn(ExperimentalMaterial3Api::class)
+@Composable
+fun MyModalBottomSheet(
+    menuOpened: Boolean,
+    setMenuOpened: (Boolean) -> Unit,
+    content: @Composable () -> Unit,
+) {
     AnimatedVisibility(
         visible = menuOpened,
         exit = slideOutVertically(targetOffsetY = { it }),
@@ -64,27 +94,13 @@ fun HomeScreen(
 
         ModalBottomSheet(
             onDismissRequest = {
-                menuOpened = false
+                setMenuOpened(false)
             },
             sheetState = sheetState,
             modifier = Modifier
                 .fillMaxWidth()
         ) {
-            Column(
-                modifier = Modifier
-                    .padding(16.dp)
-                    .heightIn(max = (0.8f * LocalConfiguration.current.screenHeightDp).dp) // Apply constraint here instead
-                    .verticalScroll(rememberScrollState()),
-                verticalArrangement = Arrangement.spacedBy(8.dp),
-            ) {
-                (1..20).forEach {
-                    MenuItem(
-                        label = "Option $it",
-                        selected = false,
-                        onClick = {}
-                    )
-                }
-            }
+            content()
         }
     }
 }
